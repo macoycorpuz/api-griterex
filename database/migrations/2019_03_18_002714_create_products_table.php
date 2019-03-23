@@ -19,7 +19,7 @@ class CreateProductsTable extends Migration
             $table->string('description');
             $table->float('price');
             $table->string('url');
-            $table->integer('supplier_id');
+            $table->integer('user_id');
             $table->integer('category_id');
             $table->timestamps();
         });

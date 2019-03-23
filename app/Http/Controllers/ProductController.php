@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Product;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     public function showAllProducts()
-    {
+    {   
         $products = Product::with('User')
                     ->with('Category')
                     ->get();
@@ -37,6 +38,38 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function showProductsBySupplier($category_id, $user_id)
+    {
+        $products = Product::with('User')
+                    ->with('Category')
+                    ->where('category_id', $category_id)
+                    ->where('user_id', $user_id)
+                    ->get();
+
+        if($products->count() <= 0) return $this->errorResponse('productNotFound');
+        
+        return response()->json([
+            'error' => false,
+            'products' => $products
+        ], 200);
+    }
+    
+    public function showProductsByName($category_id, $name)
+    {
+        $products = Product::with('User')
+                    ->with('Category')
+                    ->where('category_id', $category_id)
+                    ->where('name', 'like', '%' . $name . '%')
+                    ->get();
+
+        if($products->count() <= 0) return $this->errorResponse('productNotFound');
+        
+        return response()->json([
+            'error' => false,
+            'products' => $products
+        ], 200);
+    }
+    
     public function showOneProduct($id)
     {
         $product = Product::with('User')
@@ -52,20 +85,25 @@ class ProductController extends Controller
 
     public function create(Request $request)
     {
+        $localDir = 'http:\\\\'.$_SERVER['HTTP_HOST'].'\\griterex\\public\\images\\';
+        $cloudDir = 'http:\\\\'.$_SERVER['HTTP_HOST'].'/images/';
+
         //Add Picture Here
+        if (!$request->hasFile('image')) return $this->errorResponse('uploadFailed');
         $filenameWithExt = $request->file('image')->getClientOriginalName();
+
         $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
         $extension = $request->file('image')->guessClientExtension();
         $fileNameToStore= $filename.'_'.time().'.'.$extension;
-        $path = $request->file('image')->storeAs('public/products', $fileNameToStore);
+        $path = $request->file('image')->move('images', $fileNameToStore);
 
         //Add Product
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
-            'url' => $request->url,
-            'supplier_id' => $request->supplier_id,
+            'url' => $localDir.$fileNameToStore,
+            'user_id' => $request->user_id,
             'category_id' => $request->category_id
         ]);
         if(!$product) return $this->errorResponse('createFailed');
@@ -126,6 +164,6 @@ class ProductController extends Controller
             ],       
         ];
 
-        return response()->json($data[$res], 500);
+        return response()->json($data[$res], 200);
     }
 }

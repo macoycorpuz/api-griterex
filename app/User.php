@@ -19,9 +19,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function credit(){
         return $this->belongsTo('App\Credit');
-    }
+    } 
     
     public function account(){
         return $this->belongsTo('App\Account');
+    }
+
+    public function products(){
+        return $this->hasMany('App\Product');
     }
 }

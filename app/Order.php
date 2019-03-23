@@ -6,16 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    // The attributes that are mass assignable.
     protected $fillable = [
-        'quantity', 'total', 'status', 'active', 'product_id', 'buyer_id', 'credit_id'
+        'quantity', 'total', 'cash', 'status', 'active', 'product_id', 'user_id'
     ];
+
+    public function setActiveAttribute($value)
+    {
+        $this->attributes['active'] = $request->active === '1' ? "true": "false";
+    }
 
     public function product(){
         return $this->belongsTo('App\Product');
     }
 
-    public function buyer(){
+    public function user(){
         return $this->belongsTo('App\User');
     }
 

@@ -17,11 +17,12 @@ class CreateOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->integer('quantity');
             $table->float('total');
+            $table->float('change');
             $table->string('status');
             $table->boolean('active');
             $table->integer('product_id');
-            $table->integer('buyer_id');
-            $table->integer('credit_id')->nullable;
+            $table->integer('user_id');
+            $table->integer('credit_id')->nullable();
             $table->timestamps();
         });
     }

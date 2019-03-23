@@ -153,6 +153,6 @@ class UserController extends Controller
             ],       
         ];
 
-        return response()->json($data[$res], 500);
+        return response()->json($data[$res], 200);
     }
 }

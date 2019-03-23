@@ -14,4 +14,8 @@ class Credit extends Model
     public function user(){
         return $this->hasOne('App\User');
     }
+    
+    public function orders(){
+        return $this->hasMany('App\Order');
+    }
 }
